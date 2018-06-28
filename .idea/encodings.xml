@@ -2,6 +2,6 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/cmake-build-debug/test.sb" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/main/main.c" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/main/main.c" charset="UTF-8" />
   </component>
 </project>

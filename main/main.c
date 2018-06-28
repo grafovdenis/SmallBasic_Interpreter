@@ -10,37 +10,37 @@
 
 #define PROG_SIZE 16
 
-//Объявление переменных
+//РћР±СЉСЏРІР»РµРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С…
 char *program;
 
-//Объявление функций
-int loadProgram(char*); //Считывает программу
+//РћР±СЉСЏРІР»РµРЅРёРµ С„СѓРЅРєС†РёР№
+int loadProgram(char*); //РЎС‡РёС‚С‹РІР°РµС‚ РїСЂРѕРіСЂР°РјРјСѓ
 
 /*
- * Переменные
- * Реализован TextWindow.WriteLine
- * Реализован TextWindow.Write
- * Реализован TextWindow.Read
- * Реализован If <, >, = Then, Else
- * Реализованы + - / % * и выражения в скобках
- * Реализован GoTo
+ * РџРµСЂРµРјРµРЅРЅС‹Рµ
+ * Р РµР°Р»РёР·РѕРІР°РЅ TextWindow.WriteLine
+ * Р РµР°Р»РёР·РѕРІР°РЅ TextWindow.Write
+ * Р РµР°Р»РёР·РѕРІР°РЅ TextWindow.Read
+ * Р РµР°Р»РёР·РѕРІР°РЅ If <, >, = Then, Else
+ * Р РµР°Р»РёР·РѕРІР°РЅС‹ + - / % * Рё РІС‹СЂР°Р¶РµРЅРёСЏ РІ СЃРєРѕР±РєР°С…
+ * Р РµР°Р»РёР·РѕРІР°РЅ GoTo
  * TODO Sub
  */
 int main(int argc, char *argv[]) {
-    char *file_name = argv[1]; //Имя файла программы
+    char *file_name = argv[1]; //РРјСЏ С„Р°Р№Р»Р° РїСЂРѕРіСЂР°РјРјС‹
 
     if (argc != 2) {
         printf("Use format: <executable file>.exe <program file>.sb");
         exit(1);
     }
 
-    //Выделение памяти для программы
+    //Р’С‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РґР»СЏ РїСЂРѕРіСЂР°РјРјС‹
     if (!(program = (char *) malloc(PROG_SIZE))) {
         printf("Error allocating memory");
         exit(1);
     }
 
-    //Загрузка программы
+    //Р—Р°РіСЂСѓР·РєР° РїСЂРѕРіСЂР°РјРјС‹
     if (!loadProgram(file_name)) exit(1);
 
     start(program);
