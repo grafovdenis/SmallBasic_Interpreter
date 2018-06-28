@@ -1,0 +1,2 @@
+TextWindow.Write("Hello, ")
+TextWindow.WriteLine("World!")

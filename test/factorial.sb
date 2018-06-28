@@ -1,0 +1,10 @@
+a = TextWindow.Read()
+f = 1
+Start:
+If a > 1 Then
+    f = f * a
+    a = a - 1
+    Goto Start
+EndIf
+TextWindow.Write("Result: ")
+TextWindow.WriteLine(f)

@@ -1,0 +1,11 @@
+Hello:
+x = 1
+Start:
+TextWindow.WriteLine(x)
+x = x + 1
+If x <= 5 Then
+    Goto Start
+EndIf
+a =  TextWindow.Read()
+b = 10
+TextWindow.WriteLine(a - b/2)
