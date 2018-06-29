@@ -20,3 +20,4 @@
 #### Анализатор будет использовать пять типов лексем: DELIMITER, VARIABLE, NUMBER, COMMAND, STRING (разделитель, переменная, число, команда, строка).
 #### Также при создании интерпретатора нужно будет учитывать все особенности и грамматику языка Small BASIC. Например, все числа – целые (integers: -32767...32767).
 #### Формат входных данных: .sb.
+#### C документацией языка SmallBasic можно ознакомиться [тут](https://github.com/grafovdenis/SmallBasic_Interpreter/blob/master/Introducing%20Small%20Basic.pdf)
