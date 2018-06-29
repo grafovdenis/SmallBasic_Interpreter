@@ -11,7 +11,8 @@
 //Объявление переменных
 #define LENGTH_LABEL 32 //длина имени метки
 #define NUM_LABEL 100 //длина массива меток
-int marks = 0;
+int marks = 0; //количество меток
+int numOfSubs = 0; //количество подпрограмм
 
 char *program;
 struct lexem {
@@ -41,7 +42,15 @@ struct label {
     char *name[LENGTH_LABEL]; //Имя метки
     char *p; //Указатель на место размещения в программе
 };
+
 struct label labels[NUM_LABEL];
+
+struct sub {
+    char *name[LENGTH_LABEL]; //Имя подпрограммы
+    char *p; //Указатель на место размещения в программе
+};
+
+struct sub subs[NUM_LABEL];
 
 int numOfValues = 0;
 struct variable {
@@ -57,6 +66,7 @@ void putBack(); //Возвращает лексему во вхожной пот
 void findEol(); //Переходит на следующую строку
 int isDelim(char); //Проверяет является ли символ разделителем
 void printError(char *);
+
 int getIntCommand(char *); //Возвращает внутреннее представление команды
 
 void setAssignment(); //Присваивает значение переменной
@@ -74,6 +84,8 @@ char *findLabel(char *); //Возвращает метку
 
 void print(), printLine(),
         sbIf(), skipElse(), sbGoto();
+
+void setSub();
 
 int sbRead();
 
@@ -108,7 +120,7 @@ void start(char *p) {
                     sbGoto();
                     break;
                 case Sub:
-                    //TODO sbSub();
+                    //TODO setSub();
                     break;
                 case EndSub:
                     //TODO sbEndSub();
@@ -215,7 +227,7 @@ void getToken() {
         }
         *temp = '\0';
         token.id = getIntCommand(token.name); //Получение внутреннего представления команды
-        if (!token.id ) {
+        if (!token.id) {
             token.type = VARIABLE;
         } else
             token.type = COMMAND;
@@ -584,7 +596,7 @@ void scanLabels() {
             putBack(); //чтобы не терять следующую метку
         }
         //Если строка не помечена, переход к следующей
-        if (token.id != EOL){
+        if (token.id != EOL) {
             findEol();
         }
     } while (token.id != FINISHED);
@@ -603,8 +615,7 @@ void sbGoto() {
     getToken(); //Получаем метку перехода
     //Поиск местоположения метки
     location = findLabel(token.name);
-    if (location == '\0'){
+    if (location == '\0') {
         printError("Undefined label"); //Метка не обнаружена
-    }
-    else program = location; //Старт программы с указанной точки
+    } else program = location; //Старт программы с указанной точки
 }
