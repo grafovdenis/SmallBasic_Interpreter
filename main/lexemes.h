@@ -7,10 +7,8 @@
 #define VARIABLE   2 //Переменная
 #define NUMBER     3 //Число
 #define COMMAND    4 //Команда
-#define QUOTE      5 //Кавычки
-#define BRACKETS   6 //Скобка
-#define EQUAL      7 //Присваивание
-#define MARK       8 //Отметка
+#define STRING     5 //Строка
+#define MARK       6 //Отметка
 
 //Внутренние представления лексем
 //token.id

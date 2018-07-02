@@ -1,14 +1,3 @@
-Hello:
-x = 1
-Start:
-TextWindow.WriteLine(x)
-x = x + 1
-If x <= 5 Then
-    Goto Start
-EndIf
-Goto Finish
-a =  TextWindow.Read()
-b = 10
-TextWindow.WriteLine(a - b/2)
-Finish:
-TextWindow.WriteLine("Xex")
+x = 10
+x = x + (1)
+TextWindow.Write(x)

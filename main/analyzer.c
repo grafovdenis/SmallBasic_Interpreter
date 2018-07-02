@@ -3,10 +3,7 @@
 #include <mem.h>
 #include <stdlib.h>
 
-//Мои штуки
 #include "lexemes.h"
-
-//-------------------------------------------------------------
 
 //Объявление переменных
 #define LENGTH_LABEL 32 //длина имени метки
@@ -163,15 +160,11 @@ void getToken() {
         return;
     }
 
-    //Проверка на наличие скобок
-    if (*program == '(') {
-        program++;
-        while (*program != ')' && *program != '\n')
-            *temp++ = *program++;
-        if (*program == '\n')
-            printError("Unpaired brackets");
+    //Проверка на разделитель
+    if (strchr("+-*/%=:,()><", *program)) {
+        *temp++ = *program++;
         *temp = '\0';
-        token.type = BRACKETS;
+        token.type = DELIMITER;
         return;
     }
 
@@ -184,23 +177,7 @@ void getToken() {
             printError("Unpaired quotes");
         program++;
         *temp = '\0';
-        token.type = QUOTE;
-        return;
-    }
-
-    //Проверка на равно
-    if (*program == '=') {
-        *temp++ = *program++;
-        *temp = '\0';
-        token.type = EQUAL;
-        return;
-    }
-
-    //Проверка на разделитель
-    if (strchr("+-*/%=:,()><", *program)) {
-        *temp++ = *program++;
-        *temp = '\0';
-        token.type = DELIMITER;
+        token.type = STRING;
         return;
     }
 
@@ -412,14 +389,17 @@ void setAssignment() {
     } else {
         var = addV(token.name);
         getToken(); // Считываем равно
-        if (token.type == EQUAL) {
+        if (*token.name == '=') {
             getToken();
             if (token.type == NUMBER) {
                 var->value = atoi(token.name);
-            } else if (token.id == 12) {
+            } else if (token.id == Read) {
                 getToken();
-                if (token.type == BRACKETS) {
-                    var->value = sbRead();
+                if (*token.name == '(') {
+                    getToken();
+                    if (*token.name == ')') {
+                        var->value = sbRead();
+                    } else printError("Brackets required");
                 } else printError("Brackets required");
             } else printError("Assignment needed");
         }
@@ -437,20 +417,28 @@ void findEol() {
 void print() {
     int answer;
     getToken();
-    if (token.type == BRACKETS) {
-        putBack();
+    int type = 0;
+    char* str;
+    if (*token.name == '(') {
         getToken();
-        if (token.type == QUOTE) {
-            printf(token.name);
-            getToken();
+        type = token.type;
+        if (token.type == STRING) {
+            str = token.name;
         } else { //Значит выражение
             putBack();
             getExp(&answer);
             getToken();
-            printf("%d", answer);
+            putBack();
         }
-    }
+        if (*program == ')') {
+            if (type == STRING) {
+                printf(str);
+            } else printf("%d", answer);
+        } else printError("Brackets required");
+    } else printError("Brackets required");
 }
+
+
 
 void printLine() {
     print();
