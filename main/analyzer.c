@@ -189,6 +189,7 @@ void getToken() {
         return;
     }
 
+//
 //    char *sub = findSub(token.name);
 //    if (sub) {
 //        for (int i = 0; i < strlen(token.name) + 3; i++) {
