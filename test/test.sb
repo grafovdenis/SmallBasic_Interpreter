@@ -1,4 +1,9 @@
 Sub hello
-    TextWindow.WriteLine("Hi")
+    TextWindow.WriteLine("hello")
 EndSub
-TextWindow.WriteLine("LOL")
+Sub lol
+    TextWindow.WriteLine("lol")
+EndSub
+hello()
+lol()
+TextWindow.WriteLine("WOW")

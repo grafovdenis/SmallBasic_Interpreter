@@ -78,6 +78,7 @@ struct variable *addV(char *); //Добавление новой перемен�
 void scanLabels(); //Находит все метки
 void labelInit(); //Заполняет массив с метками нулями
 char *findLabel(char *); //Возвращает метку
+char *findSub(char *); //Возвращает функицию
 
 void print(), printLine(),
         sbIf(), skipElse(), sbGoto();
@@ -187,6 +188,16 @@ void getToken() {
         token.id = 3;
         return;
     }
+
+//    char *sub = findSub(token.name);
+//    if (sub) {
+//        for (int i = 0; i < strlen(token.name) + 3; i++) {
+//            program++;
+//        }
+//        findEol();
+//        findEol();
+//        return;
+//    }
 
     //Переменная, метка или команда?
     if (isalpha(*program)) {
@@ -607,21 +618,20 @@ void setSub() {
     getToken(); //получаем имя
     strcpy(subs[numOfSubs].name, token.name);
     findEol();
-    char * temp = malloc(sizeof(char));
+    char *temp = malloc(sizeof(char));
     temp[0] = 0;
     while (strcmp(token.name, "EndSub") != 0) {
         getToken();
         size_t len = strlen(token.name);
-        //printf("%s\n", token.name);
         size_t newLen = 0;
+        if (strcmp(token.name, "EndSub") == 0) break;
         if (token.type == STRING) {
             newLen = strlen(temp) + len + 2;
             temp = realloc(temp, newLen);
             strcat(temp, "\"");
             strcat(temp, token.name);
             strcat(temp, "\"");
-        }
-        else {
+        } else {
             newLen = strlen(temp) + len;
             temp = realloc(temp, newLen);
             strcat(temp, token.name);
@@ -629,7 +639,15 @@ void setSub() {
     }
     subs[numOfSubs].p = temp;
     numOfSubs++;
+    printf(temp);
     findEol();
-    // TODO добавить в список команд
-    // если среди команд вызвали имеющуюся, вызываем start(p)
+}
+
+char *findSub(char *s) {
+    for (int i = 0; i < NUM_LABEL; i++)
+        if (!strcmp(subs[i].name, s)) {
+            char *p = subs[i].p;
+            return p;
+        }
+    return '\0'; //Ошибка
 }
