@@ -9,6 +9,7 @@
 #define COMMAND    4 //Команда
 #define STRING     5 //Строка
 #define MARK       6 //Отметка
+#define SUB        7 //Функция
 
 //Внутренние представления лексем
 //token.id

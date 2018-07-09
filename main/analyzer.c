@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
-#include <mem.h>
 #include <stdlib.h>
+#include <memory.h>
 
 #include "lexemes.h"
 
@@ -43,8 +43,8 @@ struct label {
 struct label labels[NUM_LABEL];
 
 struct sub {
-    char *name[LENGTH_LABEL]; //Имя подпрограммы
-    char *p; //Указатель на место размещения в программе
+    char name[LENGTH_LABEL]; //Имя подпрограммы
+    char *p; //Тело функции
 };
 
 struct sub subs[NUM_LABEL];
@@ -117,10 +117,7 @@ void start(char *p) {
                     sbGoto();
                     break;
                 case Sub:
-                    //TODO setSub();
-                    break;
-                case EndSub:
-                    //TODO sbEndSub();
+                    setSub();
                     break;
                 default:
                     break;
@@ -198,7 +195,6 @@ void getToken() {
             if (*program == ':') { //метка?
                 *temp = '\0';
                 token.type = MARK;
-                token.id = 8;
                 return;
             }
         }
@@ -418,7 +414,7 @@ void print() {
     int answer;
     getToken();
     int type = 0;
-    char* str;
+    char *str;
     if (*token.name == '(') {
         getToken();
         type = token.type;
@@ -437,7 +433,6 @@ void print() {
         } else printError("Brackets required");
     } else printError("Brackets required");
 }
-
 
 
 void printLine() {
@@ -606,4 +601,35 @@ void sbGoto() {
     if (location == '\0') {
         printError("Undefined label"); //Метка не обнаружена
     } else program = location; //Старт программы с указанной точки
+}
+
+void setSub() {
+    getToken(); //получаем имя
+    strcpy(subs[numOfSubs].name, token.name);
+    findEol();
+    char * temp = malloc(sizeof(char));
+    temp[0] = 0;
+    while (strcmp(token.name, "EndSub") != 0) {
+        getToken();
+        size_t len = strlen(token.name);
+        //printf("%s\n", token.name);
+        size_t newLen = 0;
+        if (token.type == STRING) {
+            newLen = strlen(temp) + len + 2;
+            temp = realloc(temp, newLen);
+            strcat(temp, "\"");
+            strcat(temp, token.name);
+            strcat(temp, "\"");
+        }
+        else {
+            newLen = strlen(temp) + len;
+            temp = realloc(temp, newLen);
+            strcat(temp, token.name);
+        }
+    }
+    subs[numOfSubs].p = temp;
+    numOfSubs++;
+    findEol();
+    // TODO добавить в список команд
+    // если среди команд вызвали имеющуюся, вызываем start(p)
 }

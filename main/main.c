@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <setjmp.h>
-#include <mem.h>
+#include <memory.h>
 #include <ctype.h>
 
 #include "analyzer.h"
@@ -13,7 +13,7 @@
 char *program;
 
 //Объявление функций
-int loadProgram(char*); //Считывает программу
+int loadProgram(char *); //Считывает программу
 
 /*
  * Переменные
