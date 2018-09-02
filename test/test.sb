@@ -1,5 +1,7 @@
+a = 10
 Sub hello
     TextWindow.WriteLine("hello")
+    b = 10
 EndSub
 Sub lol
     TextWindow.WriteLine("lol")
@@ -7,3 +9,4 @@ EndSub
 hello()
 lol()
 TextWindow.WriteLine("WOW")
+TextWindow.WriteLine(a + b)

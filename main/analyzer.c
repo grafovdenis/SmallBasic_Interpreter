@@ -95,8 +95,18 @@ void start(char *p) {
         getToken();
         //Проверка на присваивание
         if (token.type == VARIABLE) {
-            putBack(); //откатиться на 1 лексему
-            setAssignment();
+            if (findSub(token.name) != NULL) {
+                if (*program  == '(') {
+                    program++;
+                    if (*program == ')') {
+                        program++;
+                        program = strcat(findSub(token.name), program);
+                    }
+                }
+            } else {
+                putBack(); //откатиться на 1 лексему
+                setAssignment();
+            }
         }
 
         //Проверка на команду
@@ -640,7 +650,6 @@ void setSub() {
     }
     subs[numOfSubs].p = temp;
     numOfSubs++;
-    printf(temp);
     findEol();
 }
 

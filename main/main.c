@@ -7,7 +7,7 @@
 #include "analyzer.h"
 
 
-#define PROG_SIZE 16
+#define PROG_SIZE 100
 
 //Объявление переменных
 char *program;
@@ -23,8 +23,9 @@ int loadProgram(char *); //Считывает программу
  * Реализован If <, >, = Then, Else
  * Реализованы + - / % * и выражения в скобках
  * Реализован GoTo
- * TODO Sub
+ * Реализован Sub
  */
+
 int main(int argc, char *argv[]) {
     char *file_name = argv[1]; //Имя файла программы
 

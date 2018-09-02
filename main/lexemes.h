@@ -9,7 +9,6 @@
 #define COMMAND    4 //Команда
 #define STRING     5 //Строка
 #define MARK       6 //Отметка
-#define SUB        7 //Функция
 
 //Внутренние представления лексем
 //token.id
@@ -26,4 +25,4 @@
 #define EndSub 20
 #define EOL 21  //Конец строки файла
 #define FINISHED 22 //Конец программы
-#endif //SMALLBASIC_INTERPRETER_LEXEMES_H
+#endif SMALLBASIC_INTERPRETER_LEXEMES_H
