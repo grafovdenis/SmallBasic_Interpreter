@@ -4,7 +4,7 @@
 #include <mem.h>
 #include <ctype.h>
 
-#include "analyzer.h"
+#include "main.h"
 
 
 #define PROG_SIZE 16
@@ -13,7 +13,7 @@
 char *program;
 
 //Объявление функций
-int loadProgram(char*); //Считывает программу
+int loadProgram(char *); //Считывает программу
 
 /*
  * Переменные
@@ -23,7 +23,7 @@ int loadProgram(char*); //Считывает программу
  * Реализован If <, >, = Then, Else
  * Реализованы + - / % * и выражения в скобках
  * Реализован GoTo
- * TODO Sub
+ * Реализован Sub
  */
 int main(int argc, char *argv[]) {
     char *file_name = argv[1]; //Имя файла программы

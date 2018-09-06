@@ -3,4 +3,4 @@ project(SmallBasic_Interpreter C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(SmallBasic_Interpreter main/main.c main/lexemes.h main/analyzer.c main/analyzer.h)
+add_executable(SmallBasic_Interpreter main/main.c main/lexemes.h main/analyzer.c main/main.h)

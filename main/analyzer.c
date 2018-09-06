@@ -44,7 +44,7 @@ struct label labels[NUM_LABEL];
 
 struct sub {
     char name[LENGTH_LABEL]; //Имя подпрограммы
-    char * p; //Тело функции
+    char *p; //Тело функции
 };
 
 struct sub subs[NUM_LABEL];
@@ -101,7 +101,7 @@ void start(char *p) {
                     if (*program == ')') {
                         program++;
                         size_t len = strlen(findSub(token.name)) + strlen(program);
-                        char * cpy = malloc(sizeof(char) * (len + 1));
+                        char *cpy = malloc(sizeof(char) * (len + 1));
                         strcpy(cpy, findSub(token.name));
                         cpy[len] = '\0';
                         program = strcat(cpy, program);
@@ -310,7 +310,7 @@ void value(int *result) {
     struct variable *temp = findV(token.name);
     switch (token.type) {
         case VARIABLE:
-            if (temp == NULL || temp->value == NULL)
+            if (temp == NULL)
                 printError("Variable not initialized");
             else
                 *result = temp->value;
@@ -322,8 +322,6 @@ void value(int *result) {
             return;
         default:
             printError("Syntax error: value not initialised");
-            //puts(program);
-            //exit(1);
     }
 }
 
@@ -416,6 +414,8 @@ void setAssignment() {
                         var->value = sbRead();
                     } else printError("Brackets required");
                 } else printError("Brackets required");
+            } else if (token.type == VARIABLE) {
+                var->value = findV(token.name)->value;
             } else printError("Assignment needed");
         }
     }
@@ -626,7 +626,7 @@ void sbGoto() {
 void setSub() {
     int counter = 0;
     getToken(); //получаем имя
-    struct sub * sub = malloc(sizeof(struct sub));
+    struct sub *sub = malloc(sizeof(struct sub));
     size_t size = 1000;
     size_t len = 1;
     size_t program_len = strlen(program);
@@ -635,12 +635,10 @@ void setSub() {
     sub->name[0] = '\0';
     strcpy(sub->name, token.name); //добавляем в список функций
     findEol();
-    //printf("%s\n\n", program);
     char *istr;
     char *copy = (char *) malloc(program_len + 1);
     strcpy(copy, program);
     copy[program_len] = '\0';
-    //printf("%s\n++\n", program);
     istr = strtok(program, "\n");
     // Выделение последующих частей
     while (strcmp(istr, "EndSub") != 0) {
@@ -659,16 +657,11 @@ void setSub() {
     sub->p = realloc(sub->p, len);
     subs[numOfSubs] = *sub;
     program = copy;
-    //program[len] = '\0';
     for (int i = 0; i < counter + 1; i++) {
         findEol();
     }
     free(istr);
-    //printf("%s\n--\n", subs[numOfSubs].p);
-
     numOfSubs++;
-    //printf("%s%s%s%s\n", "Sub set: ", subs[numOfSubs - 1].name,  ";\nValue:\n", subs[numOfSubs - 1].p);
-    //puts(program);
 }
 
 char *findSub(char *s) {
