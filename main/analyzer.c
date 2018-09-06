@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
-#include <mem.h>
 #include <stdlib.h>
+#include <memory.h>
 
 #include "lexemes.h"
 
@@ -43,8 +43,8 @@ struct label {
 struct label labels[NUM_LABEL];
 
 struct sub {
-    char *name[LENGTH_LABEL]; //Имя подпрограммы
-    char *p; //Указатель на место размещения в программе
+    char name[LENGTH_LABEL]; //Имя подпрограммы
+    char * p; //Тело функции
 };
 
 struct sub subs[NUM_LABEL];
@@ -78,6 +78,7 @@ struct variable *addV(char *); //Добавление новой перемен�
 void scanLabels(); //Находит все метки
 void labelInit(); //Заполняет массив с метками нулями
 char *findLabel(char *); //Возвращает метку
+char *findSub(char *); //Возвращает функицию
 
 void print(), printLine(),
         sbIf(), skipElse(), sbGoto();
@@ -94,8 +95,23 @@ void start(char *p) {
         getToken();
         //Проверка на присваивание
         if (token.type == VARIABLE) {
-            putBack(); //откатиться на 1 лексему
-            setAssignment();
+            if (findSub(token.name) != NULL) {
+                if (*program == '(') {
+                    program++;
+                    if (*program == ')') {
+                        program++;
+                        size_t len = strlen(findSub(token.name)) + strlen(program);
+                        char * cpy = malloc(sizeof(char) * (len + 1));
+                        strcpy(cpy, findSub(token.name));
+                        cpy[len] = '\0';
+                        program = strcat(cpy, program);
+                        //puts(program);
+                    } else program--;
+                } else program--;
+            } else {
+                putBack(); //откатиться на 1 лексему
+                setAssignment();
+            }
         }
 
         //Проверка на команду
@@ -117,16 +133,14 @@ void start(char *p) {
                     sbGoto();
                     break;
                 case Sub:
-                    //TODO setSub();
-                    break;
-                case EndSub:
-                    //TODO sbEndSub();
+                    setSub();
                     break;
                 default:
                     break;
             }
         }
     } while (token.id != FINISHED);
+
 }
 
 int isWhite(char c) {
@@ -198,7 +212,6 @@ void getToken() {
             if (*program == ':') { //метка?
                 *temp = '\0';
                 token.type = MARK;
-                token.id = 8;
                 return;
             }
         }
@@ -308,7 +321,9 @@ void value(int *result) {
             getToken();
             return;
         default:
-            printError("Syntax error");
+            printError("Syntax error: value not initialised");
+            //puts(program);
+            //exit(1);
     }
 }
 
@@ -418,7 +433,7 @@ void print() {
     int answer;
     getToken();
     int type = 0;
-    char* str;
+    char *str;
     if (*token.name == '(') {
         getToken();
         type = token.type;
@@ -434,10 +449,10 @@ void print() {
             if (type == STRING) {
                 printf(str);
             } else printf("%d", answer);
+            getToken();
         } else printError("Brackets required");
     } else printError("Brackets required");
 }
-
 
 
 void printLine() {
@@ -606,4 +621,60 @@ void sbGoto() {
     if (location == '\0') {
         printError("Undefined label"); //Метка не обнаружена
     } else program = location; //Старт программы с указанной точки
+}
+
+void setSub() {
+    int counter = 0;
+    getToken(); //получаем имя
+    struct sub * sub = malloc(sizeof(struct sub));
+    size_t size = 1000;
+    size_t len = 1;
+    size_t program_len = strlen(program);
+    sub->p = malloc(sizeof(char) * 1000); //Выделили память под тело программы
+    sub->p[0] = '\0'; //Затерли память, если в ней были значения
+    sub->name[0] = '\0';
+    strcpy(sub->name, token.name); //добавляем в список функций
+    findEol();
+    //printf("%s\n\n", program);
+    char *istr;
+    char *copy = (char *) malloc(program_len + 1);
+    strcpy(copy, program);
+    copy[program_len] = '\0';
+    //printf("%s\n++\n", program);
+    istr = strtok(program, "\n");
+    // Выделение последующих частей
+    while (strcmp(istr, "EndSub") != 0) {
+        // Вывод очередной выделенной части
+        len += (strlen(istr) + 1);
+        if (len >= size) {
+            size = len * 2;
+            sub->p = realloc(sub->p, size);
+        }
+        strcat(sub->p, istr);
+        strcat(sub->p, "\n");
+        // Выделение очередной части строки
+        istr = strtok(NULL, "\n");
+        counter++;
+    }
+    sub->p = realloc(sub->p, len);
+    subs[numOfSubs] = *sub;
+    program = copy;
+    //program[len] = '\0';
+    for (int i = 0; i < counter + 1; i++) {
+        findEol();
+    }
+    free(istr);
+    //printf("%s\n--\n", subs[numOfSubs].p);
+
+    numOfSubs++;
+    //printf("%s%s%s%s\n", "Sub set: ", subs[numOfSubs - 1].name,  ";\nValue:\n", subs[numOfSubs - 1].p);
+    //puts(program);
+}
+
+char *findSub(char *s) {
+    for (int i = 0; i < NUM_LABEL; i++)
+        if (strcmp(subs[i].name, s) == 0) {
+            return subs[i].p;
+        }
+    return '\0'; //Ошибка
 }
