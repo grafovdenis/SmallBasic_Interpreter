@@ -22,17 +22,17 @@ struct command {
     char name[32];
     int token_int;
 } tableCommand[] = {
-        "TextWindow.WriteLine", WriteLine,
-        "TextWindow.Write", Write,
-        "TextWindow.Read", Read,
-        "If", If,
-        "ElseIf", ElseIf,
-        "Then", Then,
-        "Else", Else,
-        "EndIf", EndIf,
-        "Goto", Goto,
-        "Sub", Sub,
-        "EndSub", EndSub,
+        {"TextWindow.WriteLine", WriteLine},
+        {"TextWindow.Write",     Write},
+        {"TextWindow.Read",      Read},
+        {"If",                   If},
+        {"ElseIf",               ElseIf},
+        {"Then",                 Then},
+        {"Else",                 Else},
+        {"EndIf",                EndIf},
+        {"Goto",                 Goto},
+        {"Sub",                  Sub},
+        {"EndSub",               EndSub}
 };
 
 struct label {
@@ -284,7 +284,7 @@ void level3(int *result) {
 void level4(int *result) {
     char operation;
     operation = 0;
-    if ((token.type == DELIMITER) && *token.name == '+' || *token.name == '-') {
+    if (token.type == DELIMITER && (*token.name == '+' || *token.name == '-')) {
         operation = *token.name;
         getToken();
     }
@@ -385,7 +385,7 @@ struct variable *addV(char *name) {
         i++;
     }
     strcpy(temp->name, name);
-    temp->value = NULL;
+    temp->value = '\0';
 
     return temp;
 }
@@ -581,7 +581,7 @@ void scanLabels() {
     //Если первая лексема является меткой
     if (token.type == MARK) {
         findEol();
-        strcpy(labels[0].name, token.name);
+        strcpy((char *) labels[0].name, token.name);
         labels[0].p = program;
         marks++;
         putBack(); //чтобы не терять следующую метку
@@ -593,7 +593,7 @@ void scanLabels() {
         getToken();
         if (token.type == MARK) {
             findEol();
-            strcpy(labels[marks].name, token.name);
+            strcpy((char *) labels[marks].name, token.name);
             labels[marks].p = program; //Текущий указатель программы
             marks++;
             putBack(); //чтобы не терять следующую метку
@@ -608,7 +608,7 @@ void scanLabels() {
 
 char *findLabel(char *s) {
     for (int i = 0; i < NUM_LABEL; i++)
-        if (!strcmp(labels[i].name, s))
+        if (!strcmp((const char *) labels[i].name, s))
             return labels[i].p;
     return '\0'; //Ошибка
 }
