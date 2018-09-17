@@ -233,7 +233,7 @@ int isDelim(char c) {
 }
 
 void printError(char *error) {
-    printf(error);
+    printf("%s", error);
     exit(1);
 }
 
@@ -447,7 +447,7 @@ void print() {
         }
         if (*program == ')') {
             if (type == STRING) {
-                printf(str);
+                printf("%s", str);
             } else printf("%d", answer);
             getToken();
         } else printError("Brackets required");
@@ -618,7 +618,7 @@ void sbGoto() {
     getToken(); //Получаем метку перехода
     //Поиск местоположения метки
     location = findLabel(token.name);
-    if (location == '\0') {
+    if (*location == '\0') {
         printError("Undefined label"); //Метка не обнаружена
     } else program = location; //Старт программы с указанной точки
 }
@@ -660,7 +660,7 @@ void setSub() {
     for (int i = 0; i < counter + 1; i++) {
         findEol();
     }
-    free(istr);
+    istr = '\0';
     numOfSubs++;
 }
 
