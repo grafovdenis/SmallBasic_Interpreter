@@ -159,7 +159,7 @@ void getToken() {
 
     //Проверка закончился ли файл интерпретируемой программы
     if (*program == '\0') {
-        temp = '\0';
+        *temp = '\0';
         token.id = FINISHED;
         token.type = DELIMITER;
         return;
@@ -660,7 +660,7 @@ void setSub() {
     for (int i = 0; i < counter + 1; i++) {
         findEol();
     }
-    istr = '\0';
+    *istr = '\0';
     numOfSubs++;
 }
 
