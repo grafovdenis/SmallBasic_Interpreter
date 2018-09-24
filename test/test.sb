@@ -1,17 +1,24 @@
+Goto HiMark
+Continue:
 a = 10
 c = a
 Sub hello
-    TextWindow.WriteLine("hello")
+    TextWindow.WriteLine("I did not hit her!")
     b = c + 10
 EndSub
-Sub lol
-    TextWindow.WriteLine("lol")
+Sub what
+    TextWindow.WriteLine("What?")
     hello()
 EndSub
 hello()
-lol()
-TextWindow.WriteLine("WOW")
+what()
+TextWindow.WriteLine("It's not true!!!")
 TextWindow.Write("a + b = ")
 TextWindow.WriteLine(a + b)
 TextWindow.Write("c = ")
 TextWindow.WriteLine(c)
+Goto Finish
+HiMark:
+TextWindow.WriteLine("Oh, Hi Mark!")
+Goto Continue
+Finish:

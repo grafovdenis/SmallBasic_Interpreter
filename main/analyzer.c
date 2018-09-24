@@ -96,6 +96,7 @@ void start(char *p) {
         //Проверка на присваивание
         if (token.type == VARIABLE) {
             if (findSub(token.name) != NULL) {
+                //Проверка на вызов функции
                 if (*program == '(') {
                     program++;
                     if (*program == ')') {
@@ -106,8 +107,8 @@ void start(char *p) {
                         cpy[len] = '\0';
                         program = strcat(cpy, program);
                         //puts(program);
-                    } else program--;
-                } else program--;
+                    } else printError("Unpaired brackets when calling a function");
+                } else printError("Syntax error: undefined variable or function");
             } else {
                 putBack(); //откатиться на 1 лексему
                 setAssignment();
@@ -140,12 +141,6 @@ void start(char *p) {
             }
         }
     } while (token.id != FINISHED);
-
-}
-
-int isWhite(char c) {
-    if (c == ' ' || c == '\t') return 1;
-    else return 0;
 }
 
 void getToken() {
@@ -224,6 +219,11 @@ void getToken() {
         return;
     }
     printf("%s\n", token.name);
+}
+
+int isWhite(char c) {
+    if (c == ' ' || c == '\t') return 1;
+    else return 0;
 }
 
 int isDelim(char c) {
@@ -616,11 +616,8 @@ char *findLabel(char *s) {
 void sbGoto() {
     char *location;
     getToken(); //Получаем метку перехода
-    //Поиск местоположения метки
-    location = findLabel(token.name);
-    if (*location == '\0') {
-        printError("Undefined label"); //Метка не обнаружена
-    } else program = location; //Старт программы с указанной точки
+    location = findLabel(token.name); //Поиск местоположения метки
+    program = location; //Старт программы с указанной точки
 }
 
 void setSub() {
