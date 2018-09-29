@@ -40,7 +40,10 @@ int main(int argc, char *argv[]) {
     }
 
     //Загрузка программы
-    if (!loadProgram(file_name)) exit(1);
+    if (!loadProgram(file_name)) {
+        puts("Load program failure");
+        exit(1);
+    }
 
     start(program);
     return 0;

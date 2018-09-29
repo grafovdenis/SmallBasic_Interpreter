@@ -8,6 +8,7 @@
 //Объявление переменных
 #define LENGTH_LABEL 32 //длина имени метки
 #define NUM_LABEL 100 //длина массива меток
+#define NUM_OF_COMMANDS 11
 int marks = 0; //количество меток
 int numOfSubs = 0; //количество подпрограмм
 
@@ -212,13 +213,18 @@ void getToken() {
         }
         *temp = '\0';
         token.id = getIntCommand(token.name); //Получение внутреннего представления команды
-        if (!token.id) {
+        if (!token.id)
             token.type = VARIABLE;
-        } else
+        else
             token.type = COMMAND;
         return;
     }
-    printf("%s\n", token.name);
+    //комментарии вида: 'комментарий
+    if (*program == '\'') {
+        findEol();
+        return;
+    }
+    printError("Syntax error");
 }
 
 int isWhite(char c) {
@@ -239,11 +245,11 @@ void printError(char *error) {
 
 int getIntCommand(char *t) {
     //Поиск лексемы в таблице операторов
-    for (int i = 0; *tableCommand[i].name; i++) {
+    for (int i = 0; i < NUM_OF_COMMANDS; i++) {
+        //puts(tableCommand[i].name);
         if (!strcmp(tableCommand[i].name, t))
             return tableCommand[i].token_int;
     }
-
     return 0; //Незнакомый оператор
 }
 
@@ -397,6 +403,9 @@ void setAssignment() {
     struct variable *var;
     if ((var = findV(token.name)) != NULL) {
         getToken(); //Считываем равно
+        if (*token.name != '=') {
+            printError("Unknown command");
+        }
         getExp(&value);
         var->value = value;
     } else {
@@ -417,7 +426,7 @@ void setAssignment() {
             } else if (token.type == VARIABLE) {
                 var->value = findV(token.name)->value;
             } else printError("Assignment needed");
-        }
+        } else printError("Unknown command");
     }
 }
 

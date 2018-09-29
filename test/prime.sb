@@ -1,0 +1,30 @@
+'Проверка на то, является ли введёное число простым
+a = TextWindow.Read()
+'Числа 1 и 2 по умолчанию считаются простыми
+If a = 1 Then
+    TextWindow.WriteLine("Not prime")
+    Goto finish
+EndIf
+If a = 2 Then
+    TextWindow.WriteLine("Prime")
+    Goto finish
+EndIf
+i = 2
+b = 0
+loop:
+If i <= a Then
+    b = a % i
+    If b = 0 Then
+        If i = a Then
+            TextWindow.WriteLine("Prime")
+            Goto finish
+         EndIf
+        If b = 0 Then
+            TextWindow.WriteLine("Not Prime")
+            Goto finish
+        EndIf
+    EndIf
+    i = i + 1
+    Goto loop
+EndIf
+finish:
