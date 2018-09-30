@@ -4,8 +4,6 @@
 #include <memory.h>
 #include <ctype.h>
 
-#include "main.h"
-
 
 #define PROG_SIZE 16
 
@@ -14,6 +12,7 @@ char *program;
 
 //Объявление функций
 int loadProgram(char *); //Считывает программу
+void start(char *program);
 
 /*
  * Переменные

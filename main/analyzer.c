@@ -2,27 +2,16 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <memory.h>
-
 #include "lexemes.h"
+#include "main.h"
 
-//Объявление переменных
-#define LENGTH_LABEL 32 //длина имени метки
-#define NUM_LABEL 100 //длина массива меток
-#define NUM_OF_COMMANDS 11
 int marks = 0; //количество меток
 int numOfSubs = 0; //количество подпрограмм
+int numOfVariables = 0; //количество переменных
 
 char *program;
-struct lexem {
-    char name[80]; //Строковое представление лексемы
-    int id; //Внутреннее представление лексемы
-    int type; //Тип лексемы
-} token;
-
-struct command {
-    char name[32];
-    int token_int;
-} tableCommand[] = {
+struct lexem token;
+struct command tableCommand[] = {
         {"TextWindow.WriteLine", WriteLine},
         {"TextWindow.Write",     Write},
         {"TextWindow.Read",      Read},
@@ -35,37 +24,9 @@ struct command {
         {"Sub",                  Sub},
         {"EndSub",               EndSub}
 };
-
-struct label {
-    char *name[LENGTH_LABEL]; //Имя метки
-    char *p; //Указатель на место размещения в программе
-};
-
 struct label labels[NUM_LABEL];
-
-struct sub {
-    char name[LENGTH_LABEL]; //Имя подпрограммы
-    char *p; //Тело функции
-};
-
 struct sub subs[NUM_LABEL];
-
-int numOfValues = 0;
-struct variable {
-    char name[80];
-    int value;
-} *p_variable;
-
-//Объявление функций
-void getToken(); //Достает очередную лексему
-int isWhite(char);
-
-void putBack(); //Возвращает лексему во вхожной поток (идёт на одну лексему назад)
-void findEol(); //Переходит на следующую строку
-int isDelim(char); //Проверяет является ли символ разделителем
-void printError(char *);
-
-int getIntCommand(char *); //Возвращает внутреннее представление команды
+struct variable *variables;
 
 void setAssignment(); //Присваивает значение переменной
 void level2(int *), level3(int *), level4(int *), level5(int *); //Уровни анализа арифметической операции
@@ -73,8 +34,9 @@ void value(int *); //Определение значения переменно�
 void unary(char, int *); //Изменение знака
 void arith(char, int *, int *); //Примитивные операции
 void getExp(int *); //Начало анализа арифметического выражения
-struct variable *findV(char *); //Поиск переменной по имени
-struct variable *addV(char *); //Добавление новой переменной
+struct variable *findVariable(char *); //Поиск переменной по имени
+struct variable *addVariable(char *); //Добавление новой переменной
+int sbRead();
 
 void scanLabels(); //Находит все метки
 void labelInit(); //Заполняет массив с метками нулями
@@ -85,8 +47,6 @@ void print(), printLine(),
         sbIf(), skipElse(), sbGoto();
 
 void setSub();
-
-int sbRead();
 
 void start(char *p) {
     program = p;
@@ -314,7 +274,7 @@ void level5(int *result) {
 
 //Определение значения переменной по ее имени
 void value(int *result) {
-    struct variable *temp = findV(token.name);
+    struct variable *temp = findVariable(token.name);
     switch (token.type) {
         case VARIABLE:
             if (temp == NULL)
@@ -368,10 +328,10 @@ void getExp(int *result) {
     putBack();
 }
 
-struct variable *findV(char *name) {
+struct variable *findVariable(char *name) {
     int i = 1;
-    struct variable *temp = p_variable;
-    while (i <= numOfValues) {
+    struct variable *temp = variables;
+    while (i <= numOfVariables) {
         if (!strcmp(name, temp->name)) {
             return temp;
         }
@@ -381,13 +341,13 @@ struct variable *findV(char *name) {
     return NULL;
 }
 
-struct variable *addV(char *name) {
-    numOfValues++;
-    p_variable = (struct variable *) realloc(p_variable, sizeof(struct variable) * numOfValues);
-    struct variable *temp = p_variable;
+struct variable *addVariable(char *name) {
+    numOfVariables++;
+    variables = (struct variable *) realloc(variables, sizeof(struct variable) * numOfVariables);
+    struct variable *temp = variables;
 
     int i = 1;
-    while (i < numOfValues) {
+    while (i < numOfVariables) {
         temp++;
         i++;
     }
@@ -402,13 +362,13 @@ void setAssignment() {
     int value;
     getToken(); //Получаем имя переменной
     struct variable *var;
-    if ((var = findV(token.name)) != NULL) { // если переменная уже задана
+    if ((var = findVariable(token.name)) != NULL) { // если переменная уже задана
         getToken(); //Считываем равно
         if (*token.name != '=') printError("Unknown command");
         getExp(&value);
         var->value = value;
     } else {
-        var = addV(token.name);
+        var = addVariable(token.name);
         getToken(); // Считываем равно
         if (*token.name == '=') {
             getToken();
@@ -625,6 +585,9 @@ void sbGoto() {
     char *location;
     getToken(); //Получаем метку перехода
     location = findLabel(token.name); //Поиск местоположения метки
+    if (location == NULL) {
+        printError("Error: Label not found");
+    }
     program = location; //Старт программы с указанной точки
 }
 
