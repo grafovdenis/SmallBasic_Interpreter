@@ -107,7 +107,6 @@ void start(char *p) {
                         strcpy(cpy, findSub(token.name));
                         cpy[len] = '\0';
                         program = strcat(cpy, program);
-                        //puts(program);
                     } else printError("Unpaired brackets when calling a function");
                 } else printError("Syntax error: undefined variable or function");
             } else {
@@ -221,7 +220,10 @@ void getToken() {
     }
     //комментарии вида: 'комментарий
     if (*program == '\'') {
-        findEol();
+        while (*program != '\n') {
+            program++;
+            *temp = '\0';
+        }
         return;
     }
     printError("Syntax error");
@@ -246,7 +248,6 @@ void printError(char *error) {
 int getIntCommand(char *t) {
     //Поиск лексемы в таблице операторов
     for (int i = 0; i < NUM_OF_COMMANDS; i++) {
-        //puts(tableCommand[i].name);
         if (!strcmp(tableCommand[i].name, t))
             return tableCommand[i].token_int;
     }
@@ -401,11 +402,9 @@ void setAssignment() {
     int value;
     getToken(); //Получаем имя переменной
     struct variable *var;
-    if ((var = findV(token.name)) != NULL) {
+    if ((var = findV(token.name)) != NULL) { // если переменная уже задана
         getToken(); //Считываем равно
-        if (*token.name != '=') {
-            printError("Unknown command");
-        }
+        if (*token.name != '=') printError("Unknown command");
         getExp(&value);
         var->value = value;
     } else {
@@ -413,9 +412,7 @@ void setAssignment() {
         getToken(); // Считываем равно
         if (*token.name == '=') {
             getToken();
-            if (token.type == NUMBER) {
-                var->value = atoi(token.name);
-            } else if (token.id == Read) {
+            if (token.id == Read) {
                 getToken();
                 if (*token.name == '(') {
                     getToken();
@@ -423,9 +420,11 @@ void setAssignment() {
                         var->value = sbRead();
                     } else printError("Brackets required");
                 } else printError("Brackets required");
-            } else if (token.type == VARIABLE) {
-                var->value = findV(token.name)->value;
-            } else printError("Assignment needed");
+            } else {
+                putBack();
+                getExp(&value);
+                var->value = value;
+            }
         } else printError("Unknown command");
     }
 }

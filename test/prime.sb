@@ -10,7 +10,6 @@ If a = 2 Then
     Goto finish
 EndIf
 i = 2
-b = 0
 loop:
 If i <= a Then
     b = a % i
