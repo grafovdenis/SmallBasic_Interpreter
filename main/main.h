@@ -4,8 +4,11 @@
 //Объявление переменных
 #define LENGTH_LABEL 32 //длина имени метки
 #define NUM_LABEL 100 //длина массива меток
-#define NUM_OF_COMMANDS 11
-
+#define NUM_OF_COMMANDS 11 //Количество команд
+extern int numOfVariables;
+extern struct lexem token;
+struct variable *variables;
+extern char *program;
 //Объявление структур
 struct lexem {
     char name[80]; //Строковое представление лексемы
@@ -36,10 +39,9 @@ struct variable {
 //Объявление функций
 void getToken(); //Достает очередную лексему
 int isWhite(char);
-void putBack(); //Возвращает лексему во вхожной поток (идёт на одну лексему назад)
-void findEol(); //Переходит на следующую строку
 int isDelim(char); //Проверяет является ли символ разделителем
 void printError(char *);
 int getIntCommand(char *); //Возвращает внутреннее представление команды
-
+void putBack(); //Возвращает лексему во вхожной поток (идёт на одну лексему назад)
+void findEol(); //Переходит на следующую строку
 #endif //SMALLBASIC_INTERPRETER_MAIN_H
