@@ -1,4 +1,4 @@
-#include <mem.h>
+#include <memory.h>
 #include <stdlib.h>
 #include "variables.h"
 #include "lexemes.h"
