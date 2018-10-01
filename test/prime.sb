@@ -4,14 +4,15 @@ a = TextWindow.Read()
 If a = 1 Then
     TextWindow.WriteLine("Not prime")
     Goto finish
-EndIf
-If a = 2 Then
+Else If a = 2 Then
     TextWindow.WriteLine("Prime")
     Goto finish
 EndIf
 i = 2
 loop:
 If i <= a Then
+    'c = a / i
+    'b = a - c * i
     b = a % i
     If b = 0 Then
         If i = a Then

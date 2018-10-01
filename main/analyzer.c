@@ -31,7 +31,7 @@ struct label labels[NUM_LABEL];
 struct sub subs[NUM_LABEL];
 struct variable *variables;
 
-void scanLabels(); //Находит все метки
+void prepare(); //Находит все метки
 void labelInit(); //Заполняет массив с метками нулями
 char *findLabel(char *); //Возвращает метку
 char *findSub(char *); //Возвращает функицию
@@ -39,7 +39,7 @@ void setSub(), sbGoto();
 
 void start(char *p) {
     program = p;
-    scanLabels();
+    prepare();
 
     do {
         getToken();
@@ -223,25 +223,15 @@ void labelInit() {
         labels[i].name[0] = '\0';
 }
 
-//Поиск всех меток
-void scanLabels() {
+//Поиск всех меток и проверка открытых и закрытых if'ов и sub'ов
+void prepare() {
     char *temp;
+    int ifCounter = 0;
+    int subCounter = 0;
 
     labelInit();  //Инициализация массива меток
     temp = program;   //Указатель на начало программы
 
-    getToken();
-    //Если первая лексема является меткой
-    if (token.type == MARK) {
-        findEol();
-        strcpy((char *) labels[0].name, token.name);
-        labels[0].p = program;
-        marks++;
-        putBack(); //чтобы не терять следующую метку
-    }
-
-    //Вторая строка и далее
-    findEol();
     do {
         getToken();
         if (token.type == MARK) {
@@ -250,12 +240,21 @@ void scanLabels() {
             labels[marks].p = program; //Текущий указатель программы
             marks++;
             putBack(); //чтобы не терять следующую метку
+        } else if (token.id == If) {
+            ifCounter++;
+        } else if (token.id == Sub) {
+            subCounter++;
+        } else if (token.id == EndIf) {
+            ifCounter--;
+        } else if (token.id == EndSub) {
+            subCounter--;
         }
         //Если строка не помечена, переход к следующей
         if (token.id != EOL) {
             findEol();
         }
     } while (token.id != FINISHED);
+    if (subCounter != 0 || ifCounter != 0) printError("Syntax error");
     program = temp; //Восстанавливаем начальное значение
 }
 
@@ -288,23 +287,23 @@ void setSub() {
     sub->name[0] = '\0';
     strcpy(sub->name, token.name); //добавляем в список функций
     findEol();
-    char *istr;
+    char *tmp;
     char *copy = (char *) malloc(program_len + 1);
     strcpy(copy, program);
     copy[program_len] = '\0';
-    istr = strtok(program, "\n");
+    tmp = strtok(program, "\n");
     // Выделение последующих частей
-    while (strcmp(istr, "EndSub") != 0) {
+    while (strcmp(tmp, "EndSub") != 0) {
         // Вывод очередной выделенной части
-        len += (strlen(istr) + 1);
+        len += (strlen(tmp) + 1);
         if (len >= size) {
             size = len * 2;
             sub->p = realloc(sub->p, size);
         }
-        strcat(sub->p, istr);
+        strcat(sub->p, tmp);
         strcat(sub->p, "\n");
         // Выделение очередной части строки
-        istr = strtok(NULL, "\n");
+        tmp = strtok(NULL, "\n");
         counter++;
     }
     sub->p = realloc(sub->p, len);
@@ -313,13 +312,13 @@ void setSub() {
     for (int i = 0; i < counter + 1; i++) {
         findEol();
     }
-    *istr = '\0';
+    *tmp = '\0';
     numOfSubs++;
 }
 
 char *findSub(char *s) {
     for (int i = 0; i < NUM_LABEL; i++)
-        if (strcmp(subs[i].name, s) == 0) {
+        if (!strcmp(subs[i].name, s)) {
             return subs[i].p;
         }
     return '\0'; //Ошибка

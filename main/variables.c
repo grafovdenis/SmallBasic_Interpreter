@@ -7,14 +7,14 @@
 
 //Сложение или вычитание
 void level2(int *result) {
-    char op;
+    char operation;
     int hold;
 
     level3(result);
-    while ((op = *token.name) == '+' || op == '-') {
+    while ((operation = *token.name) == '+' || operation == '-') {
         getToken();
         level3(&hold);
-        arith(op, result, &hold);
+        arith(operation, result, &hold);
     }
 }
 
@@ -73,7 +73,7 @@ void value(int *result) {
             getToken();
             return;
         default:
-            printError("Syntax error: value not initialised");
+            printError("Syntax error");
     }
 }
 
@@ -103,7 +103,7 @@ void arith(char o, int *r, int *h) {
             *r = *r - (t * (*h));
             break;
         default:
-            break;
+            printError("Syntax error");
     }
 }
 

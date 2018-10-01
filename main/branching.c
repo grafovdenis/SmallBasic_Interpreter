@@ -76,14 +76,9 @@ void sbIf() {
         default:
             break;
     }
-    if (cond) {  //Если значение If "истина"
-        getToken();
-        if (token.id != Then) {
-            printError("Then required");
-            return;
-        }
-    } else {
-        getToken(); //Пропускаем Then
+    getToken();
+    if (token.id != Then) printError("Then required");
+    if (!cond) { //Ожидаем Else
         getToken();
         if (strchr("\n", *token.name)) {
             do {
