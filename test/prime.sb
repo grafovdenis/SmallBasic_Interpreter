@@ -10,16 +10,16 @@ Else If a = 2 Then
 EndIf
 i = 2
 loop:
-If i <= a Then
+If (i <= a) Then
     'c = a / i
     'b = a - c * i
     b = a % i
-    If b = 0 Then
-        If i = a Then
+    If (b = 0) Then
+        If (i = a) Then
             TextWindow.WriteLine("Prime")
             Goto finish
          EndIf
-        If b = 0 Then
+        If (b = 0) Then
             TextWindow.WriteLine("Not Prime")
             Goto finish
         EndIf

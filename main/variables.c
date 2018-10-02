@@ -51,7 +51,7 @@ void level5(int *result) {
         getToken();
         level2(result);
         if (*token.name != ')')
-            printError("Unpaired parentheses");
+            printError("Pairing brackets error");
         getToken();
     } else
         value(result);

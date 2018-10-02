@@ -4,11 +4,18 @@
 #include "lexemes.h"
 #include "main.h"
 
+int close = 0; //Пожалуйста, закройте скобки
 void sbIf() {
-    int x, y, cond;
+    int left, right, cond;
     char operation;
     char operationSecond;
-    getExp(&x); //Получаем левое выражение
+    while (isWhite(*program)) program++;
+    // для выражений вида If (...) Then ...
+    if (*program == '(') {
+        program++;
+        close = 1;
+    }
+    getExp(&left); //Получаем левое выражение
     getToken(); //Получаем оператор
     if (!strchr("=<>", *token.name)) {
         printError("Syntax error");      //Недопустимый оператор
@@ -19,8 +26,8 @@ void sbIf() {
     cond = 0;
     switch (operation) {
         case '=':
-            getExp(&y);
-            if (x == y) cond = 1;
+            getExp(&right);
+            if (left == right) cond = 1;
             break;
         case '<':
             getToken();
@@ -28,12 +35,12 @@ void sbIf() {
                 operationSecond = *token.name;
                 switch (operationSecond) {
                     case '=':
-                        getExp(&y);
-                        if (x <= y) cond = 1;
+                        getExp(&right);
+                        if (left <= right) cond = 1;
                         break;
                     case '>' :
-                        getExp(&y);
-                        if (x != y) cond = 1;
+                        getExp(&right);
+                        if (left != right) cond = 1;
                         break;
                     case '<':
                         printError("Syntax error");
@@ -43,8 +50,8 @@ void sbIf() {
                 }
             } else {
                 putBack();
-                getExp(&y);
-                if (x < y) cond = 1;
+                getExp(&right);
+                if (left < right) cond = 1;
                 break;
             }
             break;
@@ -54,8 +61,8 @@ void sbIf() {
                 operationSecond = *token.name;
                 switch (operationSecond) {
                     case '=':
-                        getExp(&y);
-                        if (x >= y) cond = 1;
+                        getExp(&right);
+                        if (left >= right) cond = 1;
                         break;
                     case '>' :
                         printError("Syntax error");
@@ -68,8 +75,8 @@ void sbIf() {
                 }
             } else {
                 putBack();
-                getExp(&y);
-                if (x > y) cond = 1;
+                getExp(&right);
+                if (left > right) cond = 1;
                 break;
             }
             break;
@@ -77,6 +84,12 @@ void sbIf() {
             break;
     }
     getToken();
+    if (close == 1) {
+        if (!strcmp(token.name, ")")) getToken();
+        else printError("Pairing brackets error");
+        close = 0;
+    }
+    if (!strcmp(token.name, ")")) printError("Pairing brackets error");
     if (token.id != Then) printError("Then required");
     if (!cond) { //Ожидаем Else
         getToken();
