@@ -35,7 +35,11 @@ void printLine() {
 }
 
 int sbRead() {
-    int result;
-    scanf("%d", &result);   //Чтение входных данных
-    return result;
+    int num;
+    char term;
+    if (scanf("%d%c", &num, &term) != 2 || term != '\n')
+        printError("Integer value required");
+    else
+        return num;
+    return 0;
 }

@@ -11,7 +11,7 @@ struct variable *variables;
 extern char *program;
 //Объявление структур
 struct lexem {
-    char name[80]; //Строковое представление лексемы
+    char name[256]; //Строковое представление лексемы
     int id; //Внутреннее представление лексемы
     int type; //Тип лексемы
 };
