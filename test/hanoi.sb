@@ -1,0 +1,44 @@
+count = TextWindow.Read()
+from = 0
+too = 1
+buff = 2
+
+Sub Move1
+    TextWindow.Write("From ")
+    TextWindow.Write(from)
+    TextWindow.Write(" to ")
+    TextWindow.WriteLine(too)
+EndSub
+
+Sub switchToBuff
+    switchToBuffTemp = too
+    too = buff
+    buff = switchToBuffTemp
+EndSub
+
+Sub switchFromBuff
+    switchFromBuffTemp = from
+    from = buff
+    buff = switchFromBuffTemp
+EndSub
+
+Sub hanoi
+    If count = 1 Then
+        Move1()
+    Else
+        count = count - 1
+        switchToBuff()
+        hanoi()
+        count = count + 1
+        switchToBuff()
+
+        Move1()
+
+        count = count - 1
+        switchFromBuff()
+        hanoi()
+        count = count + 1
+        switchFromBuff()
+    EndIf
+EndSub
+hanoi()
